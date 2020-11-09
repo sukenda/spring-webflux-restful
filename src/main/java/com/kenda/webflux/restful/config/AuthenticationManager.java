@@ -1,6 +1,7 @@
 package com.kenda.webflux.restful.config;
 
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     private final JWTTokenProvider tokenProvider;
@@ -35,13 +37,12 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
             Claims claims = tokenProvider.getAllClaimsFromToken(authToken);
             List<String> roles = claims.get(JWTTokenProvider.CLAIM_ROLES, List.class);
             List<GrantedAuthority> authorities = new ArrayList<>();
-            for (String s : roles) {
-                authorities.add(new SimpleGrantedAuthority(s));
+            for (String role : roles) {
+                authorities.add(new SimpleGrantedAuthority(role));
             }
 
             return Mono.just(new UsernamePasswordAuthenticationToken(username, null, authorities));
         } catch (Exception e) {
-            e.printStackTrace();
             return Mono.empty();
         }
     }
