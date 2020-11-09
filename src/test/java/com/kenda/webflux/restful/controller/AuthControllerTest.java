@@ -107,4 +107,46 @@ class AuthControllerTest {
                 .jsonPath("$.user").isNotEmpty();
     }
 
+    @Test
+    @DisplayName("Register User")
+    @Order(5)
+    void signupExist() {
+        UserRequest request = new UserRequest();
+        request.setUsername("controller");
+        request.setPassword("controller");
+        request.setEmail("controller@gmail.com");
+        request.setProfileName("Profile controller");
+        request.setRoles(new HashSet<>(Arrays.asList("ADMIN", "GURU")));
+
+        webClient.post().uri("/auth/signup")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    @DisplayName("Token")
+    @Order(6)
+    void tokenNotFound() {
+        TokenRequest request = new TokenRequest();
+        request.setUsername("token");
+        request.setPassword("token");
+
+        webClient.post().uri("/auth/token")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+
+    @Test
+    @DisplayName("Refresh Token")
+    @Order(7)
+    void refreshTokenNotFound() {
+        webClient.post().uri("/auth/refresh-token")
+                .bodyValue(new RefreshTokenRequest("refreshTokenNotFound"))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
 }

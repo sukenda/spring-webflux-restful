@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .defaultIfEmpty(new User())
                 .flatMap(user -> {
                     if (user.getRefreshToken() == null) {
-                        return Mono.error(new UserException("Pastikan refresh token yang anda kirimkan benar", HttpStatus.BAD_REQUEST.name()));
+                        return Mono.error(new UserException("Pastikan refresh token yang anda kirim benar", HttpStatus.BAD_REQUEST.name()));
                     }
 
                     user.setRefreshToken(tokenProvider.generateToken(user, user.getRoles(), true));
