@@ -1,6 +1,7 @@
 package com.kenda.webflux.restful.service;
 
 import com.kenda.webflux.restful.entity.User;
+import com.kenda.webflux.restful.exception.UserException;
 import com.kenda.webflux.restful.model.TokenRequest;
 import com.kenda.webflux.restful.model.UserRequest;
 import com.kenda.webflux.restful.service.impl.UserServiceImpl;
@@ -82,6 +83,35 @@ class UserServiceImplTest {
         StepVerifier.create(mono.log())
                 .consumeNextWith(user -> assertEquals("service", user.getUsername()))
                 .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("Find By Username Not Found")
+    @Order(5)
+    void loadUserByUsernameNotFound() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.loadUserByUsername("sukenda");
+        });
+
+        String expectedMessage = "User must not be null!";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    @DisplayName("Password wrong")
+    @Order(6)
+    void passwordWrong() {
+        TokenRequest request = new TokenRequest();
+        request.setUsername("service");
+        request.setPassword("sukenda");
+
+        Mono<User> mono = userService.token(request);
+
+        StepVerifier.create(mono.log())
+                .expectError(UserException.class).verify();
+
     }
 
 }

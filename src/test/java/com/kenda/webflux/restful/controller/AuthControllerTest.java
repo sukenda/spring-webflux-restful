@@ -56,7 +56,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Token")
+    @DisplayName("Get Token")
     @Order(2)
     void token() {
         TokenRequest request = new TokenRequest();
@@ -108,7 +108,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Register User")
+    @DisplayName("Register User Exist")
     @Order(5)
     void signupExist() {
         UserRequest request = new UserRequest();
@@ -125,11 +125,11 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Token")
+    @DisplayName("Token Not Found")
     @Order(6)
     void tokenNotFound() {
         TokenRequest request = new TokenRequest();
-        request.setUsername("token");
+        request.setUsername("controller");
         request.setPassword("token");
 
         webClient.post().uri("/auth/token")
@@ -140,7 +140,7 @@ class AuthControllerTest {
 
 
     @Test
-    @DisplayName("Refresh Token")
+    @DisplayName("Refresh Token Not Found")
     @Order(7)
     void refreshTokenNotFound() {
         webClient.post().uri("/auth/refresh-token")
