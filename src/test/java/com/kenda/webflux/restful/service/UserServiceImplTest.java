@@ -4,8 +4,7 @@ import com.kenda.webflux.restful.entity.User;
 import com.kenda.webflux.restful.model.TokenRequest;
 import com.kenda.webflux.restful.model.UserRequest;
 import com.kenda.webflux.restful.service.impl.UserServiceImpl;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,53 +17,24 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceImplTest {
 
     @Autowired
     private UserServiceImpl userService;
 
-    @Test
-    @DisplayName("Find By Username")
-    void loadUserByUsername() {
-        UserDetails details = userService.loadUserByUsername("admin");
-
-        assertNotNull(details);
-        assertEquals("admin", details.getUsername());
-    }
-
-    @Test
-    @DisplayName("Token")
-    void token() {
-        TokenRequest request = new TokenRequest();
-        request.setUsername("admin");
-        request.setPassword("admin");
-
-        Mono<User> mono = userService.token(request);
-
-        StepVerifier.create(mono.log())
-                .consumeNextWith(user -> assertEquals(request.getUsername(), request.getUsername()))
-                .verifyComplete();
-    }
-
-    @Test
-    @DisplayName("Refresh Token")
-    void refreshToken() {
-        String refreshToken = "eyJhbGciOiJIUzUxMiJ9.eyJjcmVhdGVkIjoxNjA0OTI3ODExNDk1LCJyb2xlcyI6WyJHVVJVIiwiQURNSU4iXSwidXNlcm5hbWUiOiJhZG1pbiIsInN1YiI6ImFkbWluIiwiaWF0IjoxNjA0OTI3ODExLCJleHAiOjE2MDc4MDc4MTF9.o13qN7roXrqLHWSBiDLCT0YU3uQ7kv0L0kX4U4n0HLH6dAVgsZhygw6l4CLs4ek8VLnVAnF0Z00zcnELyrhsdQ";
-        Mono<User> mono = userService.refreshToken(refreshToken);
-
-        StepVerifier.create(mono.log())
-                .consumeNextWith(user -> assertEquals("admin", user.getUsername()))
-                .verifyComplete();
-    }
+    private String refreshToken;
 
     @Test
     @DisplayName("Register User")
+    @Order(1)
     void signup() {
         UserRequest request = new UserRequest();
-        request.setUsername("sukenda");
-        request.setPassword("sukenda");
-        request.setEmail("sukenda@gmail.com");
-        request.setProfileName("Profile sukenda");
+        request.setUsername("service");
+        request.setPassword("service");
+        request.setEmail("service@gmail.com");
+        request.setProfileName("Profile service");
         request.setRoles(new HashSet<>(Collections.singletonList("ADMIN")));
 
         Mono<User> mono = userService.signup(request);
@@ -72,4 +42,46 @@ class UserServiceImplTest {
                 .consumeNextWith(user -> assertEquals(request.getUsername(), user.getUsername()))
                 .verifyComplete();
     }
+
+    @Test
+    @DisplayName("Find By Username")
+    @Order(2)
+    void loadUserByUsername() {
+        UserDetails details = userService.loadUserByUsername("service");
+
+        assertNotNull(details);
+        assertEquals("service", details.getUsername());
+    }
+
+    @Test
+    @DisplayName("Token")
+    @Order(3)
+    void token() {
+        TokenRequest request = new TokenRequest();
+        request.setUsername("service");
+        request.setPassword("service");
+
+        Mono<User> mono = userService.token(request);
+
+        StepVerifier.create(mono.log())
+                .consumeNextWith(user -> {
+                    refreshToken = user.getRefreshToken();
+                }).verifyComplete();
+
+        assertNotNull(refreshToken);
+    }
+
+    @Test
+    @DisplayName("Refresh Token")
+    @Order(4)
+    void refreshToken() {
+        assertNotNull(refreshToken);
+
+        Mono<User> mono = userService.refreshToken(refreshToken);
+
+        StepVerifier.create(mono.log())
+                .consumeNextWith(user -> assertEquals("service", user.getUsername()))
+                .verifyComplete();
+    }
+
 }
