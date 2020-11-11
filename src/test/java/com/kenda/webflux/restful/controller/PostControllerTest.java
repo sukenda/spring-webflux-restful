@@ -1,13 +1,7 @@
 package com.kenda.webflux.restful.controller;
 
 import com.kenda.webflux.restful.entity.Comment;
-import com.kenda.webflux.restful.entity.User;
-import com.kenda.webflux.restful.model.PostRequest;
-import com.kenda.webflux.restful.model.PostResponse;
-import com.kenda.webflux.restful.model.RestResponse;
-import com.kenda.webflux.restful.model.TokenRequest;
-import com.kenda.webflux.restful.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import com.kenda.webflux.restful.model.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -16,45 +10,51 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Slf4j
 class PostControllerTest {
 
     @Autowired
     private WebTestClient webClient;
-
-    @Autowired
-    private UserService userService;
 
     private String accessToken;
 
     private String postId;
 
     @Test
-    @DisplayName("Service Token")
+    @DisplayName("Register User Post")
     @Order(0)
-    void token() {
-        TokenRequest request = new TokenRequest();
-        request.setUsername("controller");
-        request.setPassword("controller");
+    void signup() {
+        UserRequest request = new UserRequest();
+        request.setUsername("post");
+        request.setPassword("post");
+        request.setEmail("post@gmail.com");
+        request.setProfileName("Profile post");
+        request.setRoles(new HashSet<>(Collections.singletonList("ADMIN")));
 
-        Mono<User> mono = userService.token(request);
+        webClient.post().uri("/auth/signup")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(APPLICATION_JSON_VALUE)
+                .expectBody(TokenResponse.class)
+                .consumeWith(response -> {
+                    TokenResponse tokenResponse = response.getResponseBody();
 
-        StepVerifier.create(mono.log())
-                .consumeNextWith(user -> accessToken = user.getAccessToken()).verifyComplete();
-
-        assertNotNull(accessToken);
+                    assertNotNull(tokenResponse);
+                    accessToken = tokenResponse.getAccessToken();
+                });
     }
 
     @Test
@@ -129,6 +129,8 @@ class PostControllerTest {
     @Order(4)
     @DisplayName("Add Comment Post")
     void comment() {
+        assertNotNull(postId);
+
         Comment request = new Comment("Add Comment", "Body Add Comment");
         webClient.put().uri("/posts/{id}/comment", postId)
                 .bodyValue(request)
