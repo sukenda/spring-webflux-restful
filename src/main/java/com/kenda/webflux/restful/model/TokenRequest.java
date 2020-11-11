@@ -2,16 +2,15 @@ package com.kenda.webflux.restful.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TokenRequest extends BaseModel {
+public class TokenRequest implements Serializable {
 
     @NotBlank
     private String username;

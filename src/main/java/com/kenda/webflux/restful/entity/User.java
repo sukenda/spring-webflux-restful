@@ -2,8 +2,6 @@ package com.kenda.webflux.restful.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
@@ -22,9 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Document(value = "users")
 public class User implements UserDetails, Serializable {
 

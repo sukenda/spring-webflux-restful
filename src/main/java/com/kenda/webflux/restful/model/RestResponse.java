@@ -1,12 +1,12 @@
 package com.kenda.webflux.restful.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class RestResponse<T> {
 
     private String status;

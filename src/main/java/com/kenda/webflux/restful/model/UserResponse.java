@@ -2,16 +2,15 @@ package com.kenda.webflux.restful.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse extends BaseModel {
+public class UserResponse implements Serializable {
 
     private String id;
 
