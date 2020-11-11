@@ -1,7 +1,9 @@
 package com.kenda.webflux.restful.controller;
 
 import com.kenda.webflux.restful.entity.Comment;
+import com.kenda.webflux.restful.entity.User;
 import com.kenda.webflux.restful.model.*;
+import com.kenda.webflux.restful.service.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -10,6 +12,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +32,12 @@ class PostControllerTest {
     @Autowired
     private WebTestClient webClient;
 
+    @Autowired
+    private UserService userService;
+
     private String accessToken;
+
+    private String refreshToken;
 
     private String postId;
 
@@ -54,6 +63,7 @@ class PostControllerTest {
 
                     assertNotNull(tokenResponse);
                     accessToken = tokenResponse.getAccessToken();
+                    refreshToken = tokenResponse.getRefreshToken();
                 });
     }
 
@@ -237,5 +247,17 @@ class PostControllerTest {
                 .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
                 .exchange()
                 .expectStatus().isBadRequest();
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Delete User Register")
+    void deleteUserRegister() {
+        Mono<User> mono = userService.delete(refreshToken);
+
+        StepVerifier.create(mono)
+                .consumeNextWith(user -> assertEquals(refreshToken, user.getRefreshToken()))
+                .expectComplete()
+                .verify();
     }
 }

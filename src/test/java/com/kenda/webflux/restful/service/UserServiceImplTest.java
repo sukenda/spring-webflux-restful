@@ -65,9 +65,7 @@ class UserServiceImplTest {
         Mono<User> mono = userService.token(request);
 
         StepVerifier.create(mono.log())
-                .consumeNextWith(user -> {
-                    refreshToken = user.getRefreshToken();
-                }).verifyComplete();
+                .consumeNextWith(user -> refreshToken = user.getRefreshToken()).verifyComplete();
 
         assertNotNull(refreshToken);
     }
@@ -89,9 +87,7 @@ class UserServiceImplTest {
     @DisplayName("Find By Username Not Found")
     @Order(5)
     void loadUserByUsernameNotFound() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.loadUserByUsername("sukenda");
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.loadUserByUsername("UserTidakAda"));
 
         String expectedMessage = "User must not be null!";
         String actualMessage = exception.getMessage();
@@ -111,7 +107,6 @@ class UserServiceImplTest {
 
         StepVerifier.create(mono.log())
                 .expectError(UserException.class).verify();
-
     }
 
 }

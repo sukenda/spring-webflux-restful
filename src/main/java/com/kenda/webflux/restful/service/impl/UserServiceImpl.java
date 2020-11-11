@@ -95,4 +95,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                     return userRepository.save(user).flatMap(Mono::just);
                 });
     }
+
+    /**
+     * This used just for testing
+     *
+     * @param refreshToken from this user
+     * @return User Deleted
+     */
+    @Override
+    public Mono<User> delete(String refreshToken) {
+        return userRepository.findByRefreshToken(refreshToken)
+                .flatMap(user -> userRepository.delete(user).then(Mono.just(user)));
+    }
 }

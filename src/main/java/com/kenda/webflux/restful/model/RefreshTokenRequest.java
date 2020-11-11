@@ -1,14 +1,14 @@
 package com.kenda.webflux.restful.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
 public class RefreshTokenRequest {
 
     @NotBlank

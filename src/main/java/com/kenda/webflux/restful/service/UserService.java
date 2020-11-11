@@ -13,4 +13,6 @@ public interface UserService {
 
     Mono<User> signup(UserRequest request);
 
+    Mono<User> delete(String refreshToken);
+
 }

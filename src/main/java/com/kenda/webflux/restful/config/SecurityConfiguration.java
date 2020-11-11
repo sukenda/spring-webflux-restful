@@ -63,7 +63,7 @@ public class SecurityConfiguration {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components()
-                                .addSecuritySchemes("Token", new SecurityScheme()
+                        .addSecuritySchemes("Token", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
