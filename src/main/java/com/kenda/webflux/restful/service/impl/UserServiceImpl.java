@@ -9,7 +9,6 @@ import com.kenda.webflux.restful.repository.UserRepository;
 import com.kenda.webflux.restful.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +39,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public Mono<User> token(TokenRequest param) {
         return userRepository.findByUsername(param.getUsername())
-                .switchIfEmpty(Mono.error(new UserException("Pastikan username dan password anda benar", HttpStatus.BAD_REQUEST.name())))
+                .switchIfEmpty(Mono.error(new UserException("Pastikan username dan password anda benar")))
                 .flatMap(user -> {
                     if (passwordEncoder.matches(param.getPassword(), user.getPassword())) {
                         user.setRefreshToken(tokenProvider.generateToken(user, user.getRoles(), true));
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                         return userRepository.save(user).flatMap(Mono::just);
                     }
 
-                    return Mono.error(new UserException("Pastikan username dan password anda benar", HttpStatus.BAD_REQUEST.name()));
+                    return Mono.error(new UserException("Pastikan username dan password anda benar"));
                 });
     }
 
@@ -59,7 +58,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .defaultIfEmpty(new User())
                 .flatMap(user -> {
                     if (user.getRefreshToken() == null) {
-                        return Mono.error(new UserException("Pastikan refresh token yang anda kirim benar", HttpStatus.BAD_REQUEST.name()));
+                        return Mono.error(new UserException("Pastikan refresh token yang anda kirim benar"));
                     }
 
                     user.setRefreshToken(tokenProvider.generateToken(user, user.getRoles(), true));
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .defaultIfEmpty(new User())
                 .flatMap(current -> {
                     if (current.getId() != null) {
-                        return Mono.error(new UserException("Username sudah ada, silahkan gunakan username lain", HttpStatus.BAD_REQUEST.name()));
+                        return Mono.error(new UserException("Username sudah ada, silahkan gunakan username lain"));
                     }
 
                     User user = new User();

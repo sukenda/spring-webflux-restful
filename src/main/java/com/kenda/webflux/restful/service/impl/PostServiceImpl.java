@@ -10,7 +10,6 @@ import com.kenda.webflux.restful.service.ValidationService;
 import com.kenda.webflux.restful.utils.GenericConverter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -72,7 +71,7 @@ public class PostServiceImpl implements PostService {
 
     private Mono<Post> findByIdOrThrow(String id) {
         return postRepository.findById(id)
-                .switchIfEmpty(Mono.error(new DataException("Data tidak ditemukan", HttpStatus.BAD_REQUEST.name())))
+                .switchIfEmpty(Mono.error(new DataException("Data tidak ditemukan")))
                 .flatMap(Mono::just);
     }
 }

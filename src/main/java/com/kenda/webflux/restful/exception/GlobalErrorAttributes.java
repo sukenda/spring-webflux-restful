@@ -16,7 +16,7 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
         Map<String, Object> map = super.getErrorAttributes(request, options);
         Throwable error = getError(request);
         map.put("status", HttpStatus.BAD_REQUEST.value());
-        map.put("code", HttpStatus.BAD_GATEWAY.value());
+        map.put("code", HttpStatus.BAD_REQUEST.value());
         map.put("message", error.getMessage());
 
         return map;

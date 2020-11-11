@@ -4,20 +4,13 @@ public class UserException extends RuntimeException {
 
     private final String message;
 
-    private final String httpStatus;
-
-    public UserException(String message, String httpStatus) {
+    public UserException(String message) {
         this.message = message;
-        this.httpStatus = httpStatus;
     }
 
     @Override
     public String getMessage() {
         return message;
-    }
-
-    public String getHttpStatus() {
-        return httpStatus;
     }
 
 }
