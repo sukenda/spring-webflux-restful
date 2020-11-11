@@ -3,6 +3,7 @@ package com.kenda.webflux.restful.controller;
 import com.kenda.webflux.restful.model.*;
 import com.kenda.webflux.restful.service.UserService;
 import com.kenda.webflux.restful.utils.GenericConverter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ public class AuthController {
 
     private final UserService userService;
 
+    @SecurityRequirements
     @PostMapping("/token")
     public Mono<TokenResponse> token(@Valid @RequestBody TokenRequest request) {
         return userService.token(request)
@@ -31,6 +33,7 @@ public class AuthController {
                 });
     }
 
+    @SecurityRequirements
     @PostMapping("/refresh-token")
     public Mono<TokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         return userService.refreshToken(request.getRefreshToken())
@@ -43,6 +46,7 @@ public class AuthController {
                 });
     }
 
+    @SecurityRequirements
     @PostMapping("/signup")
     public Mono<TokenResponse> signup(@Valid @RequestBody UserRequest request) {
         return userService.signup(request)

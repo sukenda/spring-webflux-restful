@@ -3,8 +3,8 @@ package com.kenda.webflux.restful.utils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 
-import java.lang.reflect.Type;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GenericConverter {
 
@@ -12,35 +12,24 @@ public class GenericConverter {
         throw new IllegalStateException("Utility class");
     }
 
-    public static <T, E> E mapper(T source, Class<E> typeDestination) {
+    public static <T, E> E mapper(T source, Class<E> targetClass) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return modelMapper.map(source, typeDestination);
+
+        return modelMapper.map(source, targetClass);
 
     }
 
-    public static <T, E> E mapper(T source, E destination) {
+    public static <S, T> List<T> mapperList(List<S> sources, Class<T> targetClass) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        modelMapper.map(source, destination);
 
-        return destination;
-    }
-
-    public static <E, T> List<E> mapper(List<T> source, Type destinationType) {
-
-        List<E> model = null;
-        if (source != null && destinationType != null) {
-
-            ModelMapper modelMapper = new ModelMapper();
-
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            model = modelMapper.map(source, destinationType);
-        }
-
-        return model;
+        return sources
+                .stream()
+                .map(element -> modelMapper.map(element, targetClass))
+                .collect(Collectors.toList());
     }
 
 }
