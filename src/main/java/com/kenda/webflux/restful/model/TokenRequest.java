@@ -1,14 +1,15 @@
 package com.kenda.webflux.restful.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
 
 @NoArgsConstructor
 @Setter
 @Getter
-public class TokenRequest implements Serializable {
+public class TokenRequest {
 
     @NotBlank
     private String username;

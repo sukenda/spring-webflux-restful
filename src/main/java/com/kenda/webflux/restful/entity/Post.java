@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Document(value = "posts")
+@Document(collection = "posts")
 public class Post extends BaseEntity {
 
     @Indexed

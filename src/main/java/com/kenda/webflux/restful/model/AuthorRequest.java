@@ -5,28 +5,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.util.Set;
 
+/**
+ * Created by sukenda
+ **/
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserRequest {
+public class AuthorRequest {
 
     @NotBlank
-    private String username;
+    private String firstName;
 
     @NotBlank
-    private String password;
+    private String lastName;
 
     @NotBlank
-    private String email;
+    private String city;
 
     @NotBlank
-    private String profileName;
-
-    @NotEmpty
-    private Set<String> roles;
+    private String gender;
 
 }

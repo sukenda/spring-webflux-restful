@@ -2,13 +2,12 @@ package com.kenda.webflux.restful.model;
 
 import lombok.*;
 
-import java.io.Serializable;
 import java.util.Set;
 
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserResponse implements Serializable {
+public class UserResponse {
 
     private String id;
 

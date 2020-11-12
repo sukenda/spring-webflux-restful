@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@Document(value = "users")
+@Document(collection = "users")
 public class User implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 1905122041950251207L;

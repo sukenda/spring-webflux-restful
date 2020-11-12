@@ -39,4 +39,6 @@ public abstract class BaseEntity implements Serializable {
     @Version
     private Integer version;
 
+    private Boolean delete = Boolean.FALSE;
+
 }
