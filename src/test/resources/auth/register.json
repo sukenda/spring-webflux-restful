@@ -1,0 +1,9 @@
+{
+  "username": "${username}",
+  "password": "${password}",
+  "email": "${email}",
+  "profileName": "${profileName}",
+  "roles": [
+    "${roles}"
+  ]
+}

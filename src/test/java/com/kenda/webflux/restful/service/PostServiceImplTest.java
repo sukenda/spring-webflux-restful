@@ -51,7 +51,7 @@ class PostServiceImplTest {
         request.setBody("Body");
         request.setComments(Arrays.asList(new Comment("Kenda 1", "Body ke 1"), new Comment("Kenda 2", "Body ke 2")));
 
-        Mono<Post> mono = postService.create(request);
+        Mono<Post> mono = postService.save(request);
 
         StepVerifier.create(mono)
                 .consumeNextWith(post -> {
@@ -129,7 +129,7 @@ class PostServiceImplTest {
     @Order(6)
     @DisplayName("Find Post")
     void read() {
-        Flux<Post> flux = postService.read();
+        Flux<Post> flux = postService.find();
 
         // Belum nemu cara menggunakan StepVerifier dengan flux yang dinamis
         assertNotNull(flux.collectList().block());
@@ -137,6 +137,18 @@ class PostServiceImplTest {
 
     @Test
     @Order(7)
+    @DisplayName("Find Post by id")
+    void findById() {
+        Mono<Post> mono = postService.findById(postId);
+
+        StepVerifier.create(mono)
+                .consumeNextWith(post -> assertNotNull(post.getTitle()))
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    @Order(8)
     @DisplayName("Delete Post")
     void delete() {
         Mono<Post> mono = postService.delete(postId);
@@ -148,7 +160,7 @@ class PostServiceImplTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     @DisplayName("Delete Post Not Found")
     void deleteNotFound() {
         Mono<Post> mono = postService.delete(postId);
@@ -159,7 +171,7 @@ class PostServiceImplTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     @DisplayName("expectNext")
     void expectNext() {
         StepVerifier.create(Flux.just("Kenda", "Sukenda", "Kenda Sukenda"))

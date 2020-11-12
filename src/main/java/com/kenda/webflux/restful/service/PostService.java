@@ -8,9 +8,11 @@ import reactor.core.publisher.Mono;
 
 public interface PostService {
 
-    Mono<Post> create(PostRequest request);
+    Mono<Post> save(PostRequest request);
 
-    Flux<Post> read();
+    Flux<Post> find();
+
+    Mono<Post> findById(String id);
 
     Mono<Post> update(String id, PostRequest request);
 

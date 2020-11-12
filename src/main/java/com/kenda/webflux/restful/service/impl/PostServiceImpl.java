@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
     private final ValidationService validationService;
 
     @Override
-    public Mono<Post> create(PostRequest request) {
+    public Mono<Post> save(PostRequest request) {
         validationService.validate(request);
 
         Post post = GenericConverter.mapper(request, Post.class);
@@ -32,8 +32,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Flux<Post> read() {
+    public Flux<Post> find() {
         return postRepository.findAll();
+    }
+
+    @Override
+    public Mono<Post> findById(String id) {
+        Mono<Post> mono = findByIdOrThrow(id);
+
+        return mono.flatMap(Mono::just);
     }
 
     @Override

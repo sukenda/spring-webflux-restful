@@ -9,6 +9,32 @@ Spring webflux restful build using spring boot webflux and mongodb, this project
 See 
 [sonarcloud dashboard](https://sonarcloud.io/dashboard?id=sukenda_spring-webflux-restful)
 
+# Maven command
+- Build skip tests
+```
+mvn clean install -DskipTests
+```
+
+- Build and run test
+```
+mvn clean install
+```
+
+- Build and push image using jib
+```
+mvn compile jib:build
+```
+
+- Build image local
+```
+mvn compile jib:dockerBuild
+```
+
+- Run test using gatling
+```
+mvn gatling:test
+```
+
 # API Spec
 
 ## Register account
@@ -184,6 +210,35 @@ Response :
       ]
     }
   ]
+}
+```
+
+## Get Post By ID
+Request :
+- Method : GET
+- Endpoint : `/posts/{id}`
+- Header :
+    - Authorization: Bearer xxxxx
+    - Content-Type: application/json
+    - Accept: application/json
+    
+Response :
+
+```json
+{
+  "status": "string",
+  "code": "number",
+  "data": {
+      "id": "string",
+      "title": "string",
+      "body": "string",
+      "comments": [
+        {
+          "name": "string",
+          "body": "string"
+        }
+      ]
+    }
 }
 ```
 

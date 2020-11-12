@@ -211,6 +211,25 @@ class PostControllerTest {
 
     @Test
     @Order(8)
+    @DisplayName("Find Post by id")
+    void findById() {
+        webClient.get().uri("/posts/{id}", postId)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<RestResponse<PostResponse>>() {
+                })
+                .consumeWith(response -> {
+                    RestResponse<PostResponse> restResponse = response.getResponseBody();
+
+                    assertNotNull(restResponse);
+                    assertNotNull(restResponse.getData());
+                });
+    }
+
+    @Test
+    @Order(9)
     @DisplayName("Delete Token Not Found")
     void tokenNotFound() {
         webClient.delete().uri("/posts/{id}", postId)
@@ -220,7 +239,7 @@ class PostControllerTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     @DisplayName("Delete Post")
     void delete() {
         webClient.delete().uri("/posts/{id}", postId)
@@ -239,7 +258,7 @@ class PostControllerTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     @DisplayName("Delete Post Not Found")
     void deleteNotFound() {
         webClient.delete().uri("/posts/{id}", "notFoundId")
@@ -250,7 +269,7 @@ class PostControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     @DisplayName("Delete User Register")
     void deleteUserRegister() {
         Mono<User> mono = userService.delete(refreshToken);

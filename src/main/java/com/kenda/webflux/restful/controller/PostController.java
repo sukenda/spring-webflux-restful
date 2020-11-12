@@ -20,8 +20,8 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public Mono<RestResponse<PostResponse>> create(@RequestBody PostRequest request) {
-        return postService.create(request)
+    public Mono<RestResponse<PostResponse>> save(@RequestBody PostRequest request) {
+        return postService.save(request)
                 .flatMap(post -> Mono.just(
                         new RestResponse<>(
                                 "OK",
@@ -31,14 +31,25 @@ public class PostController {
     }
 
     @GetMapping
-    public Mono<RestResponse<List<PostResponse>>> read() {
-        return postService.read()
+    public Mono<RestResponse<List<PostResponse>>> find() {
+        return postService.find()
                 .collectList()
                 .flatMap(posts -> Mono.just(
                         new RestResponse<>(
                                 "OK",
                                 200,
                                 GenericConverter.mapperList(posts, PostResponse.class)
+                        )));
+    }
+
+    @GetMapping("/{id}")
+    public Mono<RestResponse<PostResponse>> findById(@PathVariable("id") String id) {
+        return postService.findById(id)
+                .flatMap(posts -> Mono.just(
+                        new RestResponse<>(
+                                "OK",
+                                200,
+                                GenericConverter.mapper(posts, PostResponse.class)
                         )));
     }
 
