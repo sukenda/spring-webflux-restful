@@ -5,13 +5,17 @@ import com.kenda.webflux.restful.entity.User;
 import com.kenda.webflux.restful.model.*;
 import com.kenda.webflux.restful.service.UserService;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -21,14 +25,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource(locations = {"classpath:application.properties"})
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@SpringBootTest
 class PostControllerTest {
 
     @Autowired
@@ -43,6 +49,17 @@ class PostControllerTest {
 
     private String postId;
 
+    @Autowired
+    private ApplicationContext context;
+
+    @BeforeEach
+    void setUp(RestDocumentationContextProvider restDocumentation) {
+        webClient = WebTestClient.bindToApplicationContext(context)
+                .configureClient()
+                .filter(documentationConfiguration(restDocumentation))
+                .build();
+    }
+
     @Test
     @DisplayName("Register User Post")
     @Order(0)
@@ -56,9 +73,10 @@ class PostControllerTest {
 
         webClient.post().uri("/auth/signup")
                 .bodyValue(request)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType(APPLICATION_JSON_VALUE)
                 .expectBody(TokenResponse.class)
                 .consumeWith(response -> {
                     TokenResponse tokenResponse = response.getResponseBody();
@@ -81,8 +99,10 @@ class PostControllerTest {
         webClient.post().uri("/posts")
                 .bodyValue(request)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
+                .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<RestResponse<PostResponse>>() {
                 })
                 .consumeWith(response -> {
@@ -90,7 +110,7 @@ class PostControllerTest {
 
                     assertNotNull(restResponse);
                     postId = restResponse.getData().getId();
-                });
+                }).consumeWith(document("CreatePost"));
 
         assertNotNull(postId);
     }
@@ -106,9 +126,11 @@ class PostControllerTest {
         webClient.post().uri("/posts")
                 .bodyValue(request)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().isBadRequest()
+                .expectBody();
     }
 
     @Test
@@ -123,7 +145,8 @@ class PostControllerTest {
         webClient.put().uri("/posts/{id}", postId)
                 .bodyValue(request)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<RestResponse<PostResponse>>() {
@@ -134,7 +157,7 @@ class PostControllerTest {
                     assertNotNull(restResponse);
                     assertEquals("Judul Update", restResponse.getData().getTitle());
                     assertEquals("Body Update", restResponse.getData().getBody());
-                });
+                }).consumeWith(document("UpdatePost"));
     }
 
     @Test
@@ -147,7 +170,8 @@ class PostControllerTest {
         webClient.put().uri("/posts/{id}/comment", postId)
                 .bodyValue(request)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<RestResponse<PostResponse>>() {
@@ -156,7 +180,7 @@ class PostControllerTest {
                     RestResponse<PostResponse> restResponse = response.getResponseBody();
 
                     assertNotNull(restResponse);
-                });
+                }).consumeWith(document("AddComment"));
     }
 
     @Test
@@ -171,9 +195,11 @@ class PostControllerTest {
         webClient.put().uri("/posts/{id}", "notFoundId")
                 .bodyValue(request)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().isBadRequest()
+                .expectBody();
     }
 
     @Test
@@ -187,9 +213,11 @@ class PostControllerTest {
         webClient.put().uri("/posts/{id}", postId)
                 .bodyValue(request)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().isBadRequest()
+                .expectBody();
     }
 
     @Test
@@ -198,7 +226,8 @@ class PostControllerTest {
     void read() {
         webClient.get().uri("/posts")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<RestResponse<List<PostResponse>>>() {
@@ -208,7 +237,7 @@ class PostControllerTest {
 
                     assertNotNull(restResponse);
                     assertNotNull(restResponse.getData());
-                });
+                }).consumeWith(document("FindPost"));
     }
 
     @Test
@@ -217,7 +246,8 @@ class PostControllerTest {
     void findById() {
         webClient.get().uri("/posts/{id}", postId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<RestResponse<PostResponse>>() {
@@ -227,7 +257,7 @@ class PostControllerTest {
 
                     assertNotNull(restResponse);
                     assertNotNull(restResponse.getData());
-                });
+                }).consumeWith(document("FindPostById"));
     }
 
     @Test
@@ -235,9 +265,11 @@ class PostControllerTest {
     @DisplayName("Delete Token Not Found")
     void tokenNotFound() {
         webClient.delete().uri("/posts/{id}", postId)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isUnauthorized()
+                .expectBody();
     }
 
     @Test
@@ -246,7 +278,8 @@ class PostControllerTest {
     void delete() {
         webClient.delete().uri("/posts/{id}", postId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(new ParameterizedTypeReference<RestResponse<String>>() {
@@ -256,7 +289,7 @@ class PostControllerTest {
 
                     assertNotNull(restResponse);
                     assertEquals(postId, restResponse.getData());
-                });
+                }).consumeWith(document("DeletePost"));
     }
 
     @Test
@@ -265,9 +298,11 @@ class PostControllerTest {
     void deleteNotFound() {
         webClient.delete().uri("/posts/{id}", "notFoundId")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .accept(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_STREAM_JSON_VALUE)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().isBadRequest()
+                .expectBody();
     }
 
     @Test

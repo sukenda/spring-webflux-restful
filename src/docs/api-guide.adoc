@@ -1,0 +1,119 @@
+= RESTful API Guide
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+|===
+
+=== Authentication API
+
+==== Register
+===== Request
+include::{snippets}/Register/http-request.adoc[]
+
+===== Response
+include::{snippets}/Register/http-response.adoc[]
+
+==== Get Token
+===== Request
+include::{snippets}/Token/http-request.adoc[]
+
+===== Response
+include::{snippets}/Token/http-response.adoc[]
+
+==== Refresh Token
+===== Request
+include::{snippets}/RefreshToken/http-request.adoc[]
+
+===== Response
+include::{snippets}/RefreshToken/http-response.adoc[]
+
+=== Post API
+
+==== Create Post
+===== Request
+include::{snippets}/CreatePost/http-request.adoc[]
+
+===== Response
+include::{snippets}/CreatePost/http-response.adoc[]
+
+==== Update Post
+===== Request
+include::{snippets}/UpdatePost/http-request.adoc[]
+
+===== Response
+include::{snippets}/UpdatePost/http-response.adoc[]
+
+==== Find Post
+===== Request
+include::{snippets}/FindPost/http-request.adoc[]
+
+===== Response
+include::{snippets}/FindPost/http-response.adoc[]
+
+==== Find Post By ID
+===== Request
+include::{snippets}/FindPostById/http-request.adoc[]
+
+===== Response
+include::{snippets}/FindPostById/http-response.adoc[]
+
+==== Add Comment to Post
+===== Request
+include::{snippets}/AddComment/http-request.adoc[]
+
+===== Response
+include::{snippets}/AddComment/http-response.adoc[]
+
+==== Delete Post
+===== Request
+include::{snippets}/DeletePost/http-request.adoc[]
+
+===== Response
+include::{snippets}/DeletePost/http-response.adoc[]

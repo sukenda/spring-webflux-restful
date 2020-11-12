@@ -4,13 +4,17 @@ import com.kenda.webflux.restful.entity.User;
 import com.kenda.webflux.restful.model.*;
 import com.kenda.webflux.restful.service.UserService;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -21,16 +25,17 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
 /**
  * Created by Kenda on 12 Nov 2020
  * Email soekenda09@gmail.com
  **/
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource(locations = {"classpath:application.properties"})
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@SpringBootTest
 class AuthorControllerTest {
 
     @Autowired
@@ -45,6 +50,17 @@ class AuthorControllerTest {
 
     private String authorId;
 
+    @Autowired
+    private ApplicationContext context;
+
+    @BeforeEach
+    void setUp(RestDocumentationContextProvider restDocumentation) {
+        webClient = WebTestClient.bindToApplicationContext(context)
+                .configureClient()
+                .filter(documentationConfiguration(restDocumentation))
+                .build();
+    }
+
     @Test
     @DisplayName("Register User Author")
     @Order(0)
@@ -58,6 +74,7 @@ class AuthorControllerTest {
 
         webClient.post().uri("/auth/signup")
                 .bodyValue(request)
+                .accept(MediaType.valueOf(MediaType.APPLICATION_STREAM_JSON_VALUE))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(TokenResponse.class)

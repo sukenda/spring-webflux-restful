@@ -34,10 +34,10 @@ class UserServiceImplTest {
     @Order(1)
     void signup() {
         UserRequest request = new UserRequest();
-        request.setUsername("service");
-        request.setPassword("service");
-        request.setEmail("service@gmail.com");
-        request.setProfileName("Profile service");
+        request.setUsername("authService");
+        request.setPassword("authService");
+        request.setEmail("authService@gmail.com");
+        request.setProfileName("Profile authService");
         request.setRoles(new HashSet<>(Collections.singletonList("ADMIN")));
 
         Mono<User> mono = userService.signup(request);
@@ -50,10 +50,10 @@ class UserServiceImplTest {
     @DisplayName("Find By Username")
     @Order(2)
     void loadUserByUsername() {
-        UserDetails details = userService.loadUserByUsername("service");
+        UserDetails details = userService.loadUserByUsername("authService");
 
         assertNotNull(details);
-        assertEquals("service", details.getUsername());
+        assertEquals("authService", details.getUsername());
     }
 
     @Test
@@ -61,8 +61,8 @@ class UserServiceImplTest {
     @Order(3)
     void token() {
         TokenRequest request = new TokenRequest();
-        request.setUsername("service");
-        request.setPassword("service");
+        request.setUsername("authService");
+        request.setPassword("authService");
 
         Mono<User> mono = userService.token(request);
 
@@ -81,7 +81,10 @@ class UserServiceImplTest {
         Mono<User> mono = userService.refreshToken(refreshToken);
 
         StepVerifier.create(mono.log())
-                .consumeNextWith(user -> assertEquals("service", user.getUsername()))
+                .consumeNextWith(user -> {
+                    assertEquals("authService", user.getUsername());
+                    refreshToken = user.getRefreshToken();
+                })
                 .verifyComplete();
     }
 
@@ -102,13 +105,25 @@ class UserServiceImplTest {
     @Order(6)
     void passwordWrong() {
         TokenRequest request = new TokenRequest();
-        request.setUsername("service");
+        request.setUsername("authService");
         request.setPassword("sukenda");
 
         Mono<User> mono = userService.token(request);
 
         StepVerifier.create(mono.log())
                 .expectError(UserException.class).verify();
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Delete User Register")
+    void deleteUserRegister() {
+        Mono<User> mono = userService.delete(refreshToken);
+
+        StepVerifier.create(mono)
+                .consumeNextWith(user -> assertEquals(refreshToken, user.getRefreshToken()))
+                .expectComplete()
+                .verify();
     }
 
 }
