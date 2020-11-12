@@ -169,6 +169,7 @@ Response :
 {
   "status": "string",
   "code": "number",
+  "rows": "number",
   "data": {
     "id": "string",
     "title": "string",
@@ -197,6 +198,7 @@ Response :
 {
   "status": "string",
   "code": "number",
+  "rows": "number",
   "data": [
     {
       "id": "string",
@@ -228,6 +230,7 @@ Response :
 {
   "status": "string",
   "code": "number",
+  "rows": "number",
   "data": {
       "id": "string",
       "title": "string",
@@ -269,6 +272,7 @@ Response :
 {
   "status": "string",
   "code": "number",
+  "rows": "number",
   "data": {
     "id": "string",
     "title": "string",
@@ -304,6 +308,7 @@ Response :
 {
   "status": "string",
   "code": "number",
+  "rows": "number",
   "data": {
     "id": "string",
     "title": "string",
@@ -332,6 +337,7 @@ Response :
 {
   "status": "string",
   "code": "number",
+  "rows": "number",
   "data": "string"
 }
 ```
