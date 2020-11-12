@@ -42,8 +42,8 @@ Request :
 - Method : POST
 - Endpoint : `/auth/signup`
 - Header :
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
 - Body :
 
 ```json 
@@ -81,8 +81,8 @@ Request :
 - Method : POST
 - Endpoint : `/auth/token`
 - Header :
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
 - Body :
 
 ```json
@@ -114,8 +114,8 @@ Request :
 - Method : POST
 - Endpoint : `/auth/refresh-token`
 - Header :
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
 - Body :
 
 ```json
@@ -148,8 +148,8 @@ Request :
 - Endpoint : `/posts`
 - Header :
     - Authorization: Bearer xxxxx
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
 - Body :
 
 ```json
@@ -189,8 +189,8 @@ Request :
 - Endpoint : `/posts`
 - Header :
     - Authorization: Bearer xxxxx
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
     
 Response :
 
@@ -221,8 +221,8 @@ Request :
 - Endpoint : `/posts/{id}`
 - Header :
     - Authorization: Bearer xxxxx
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
     
 Response :
 
@@ -251,8 +251,8 @@ Request :
 - Endpoint : `/posts/{id}`
 - Header :
     - Authorization: Bearer xxxxx
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
 - Body :
 ```json
 {
@@ -293,8 +293,8 @@ Request :
 - Endpoint : `/posts/{id}/comment`
 - Header :
     - Authorization: Bearer xxxxx
-    - Content-Type: application/json
-    - Accept: application/json
+    - Content-Type: application/stream+json
+    - Accept: application/stream+json
 - Body :
 ```json
 {
@@ -329,7 +329,7 @@ Request :
 - Endpoint : `/posts/{id}`
 - Header :
     - Authorization: Bearer xxxxx
-    - Accept: application/json
+    - Accept: application/stream+json
 
 Response :
 

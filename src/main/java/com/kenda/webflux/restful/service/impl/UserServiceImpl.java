@@ -7,6 +7,7 @@ import com.kenda.webflux.restful.model.TokenRequest;
 import com.kenda.webflux.restful.model.UserRequest;
 import com.kenda.webflux.restful.repository.UserRepository;
 import com.kenda.webflux.restful.service.UserService;
+import com.kenda.webflux.restful.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final ValidationService validationService;
+
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username).block();
@@ -37,11 +40,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Mono<User> token(TokenRequest param) {
-        return userRepository.findByUsername(param.getUsername())
+    public Mono<User> token(TokenRequest request) {
+        validationService.validate(request);
+
+        return userRepository.findByUsername(request.getUsername())
                 .switchIfEmpty(Mono.error(new UserException("Pastikan username dan password anda benar")))
                 .flatMap(user -> {
-                    if (passwordEncoder.matches(param.getPassword(), user.getPassword())) {
+                    if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                         user.setRefreshToken(tokenProvider.generateToken(user, user.getRoles(), true));
                         user.setAccessToken(tokenProvider.generateToken(user, user.getRoles(), false));
 
@@ -54,6 +59,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public Mono<User> refreshToken(String refreshToken) {
+        validationService.validate(refreshToken);
+
         return userRepository.findByRefreshToken(refreshToken)
                 .defaultIfEmpty(new User())
                 .flatMap(user -> {
@@ -70,6 +77,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public Mono<User> signup(UserRequest request) {
+        validationService.validate(request);
+
         return userRepository.findByUsername(request.getUsername())
                 .defaultIfEmpty(new User())
                 .flatMap(current -> {

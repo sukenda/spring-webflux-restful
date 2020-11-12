@@ -6,6 +6,7 @@ import com.kenda.webflux.restful.utils.GenericConverter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public class AuthController {
     private final UserService userService;
 
     @SecurityRequirements
-    @PostMapping("/token")
+    @PostMapping(value = "/token", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Mono<TokenResponse> token(@Valid @RequestBody TokenRequest request) {
         return userService.token(request)
                 .flatMap(user -> {
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     @SecurityRequirements
-    @PostMapping("/refresh-token")
+    @PostMapping(value = "/refresh-token", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Mono<TokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         return userService.refreshToken(request.getRefreshToken())
                 .flatMap(user -> {
@@ -49,7 +50,7 @@ public class AuthController {
     }
 
     @SecurityRequirements
-    @PostMapping("/signup")
+    @PostMapping(value = "/signup", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Mono<TokenResponse> signup(@Valid @RequestBody UserRequest request) {
         return userService.signup(request)
                 .flatMap(user -> {
