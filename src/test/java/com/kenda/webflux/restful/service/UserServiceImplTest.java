@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestPropertySource(locations = {"classpath:application.properties"})
 class UserServiceImplTest {
 
     @Autowired
